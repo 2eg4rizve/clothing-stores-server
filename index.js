@@ -103,6 +103,42 @@ async function run() {
       }
     });
 
+
+      //update one product
+      app.put("/products/:id", async (req, res) => {
+        try {
+          const id = req.params.id;
+  
+          console.log("update id : ", id);
+  
+          const filter = { _id: new ObjectId(id) };
+  
+          const options = { upsert: true };
+  
+          const updatedProduct = req.body;
+  
+          //const newProduct = { UserName, userEmail, photo, productName, bandName, type, price, shortDescription, rating }
+  
+          const product = {
+            $set: {
+              // userName: updatedProduct.UserName,
+              // userEmail: updatedProduct.userEmail,
+              // photo: updatedProduct.photo,
+  
+              // rating: updatedProduct.rating,
+  
+              ...updatedProduct,
+            },
+          };
+  
+          const result = await productsCollection.updateOne(filter, product, options);
+          res.send(result);
+        } catch (err) {
+          console.log(err);
+        }
+      });
+  
+
     // Send a ping to confirm a successful connection
     //await client.db("admin").command({ ping: 1 });
 
