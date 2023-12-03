@@ -7,13 +7,14 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mjrato5.mongodb.net/?retryWrites=true&w=majority`;
 
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mjrato5.mongodb.net/?retryWrites=true&w=majority`;
 
-const uri = "mongodb+srv://storeDB:hzE7qAl38IuFxjFE@cluster0.mjrato5.mongodb.net/?retryWrites=true&w=majority";
+const uri =
+  "mongodb+srv://storeDB:hzE7qAl38IuFxjFE@cluster0.mjrato5.mongodb.net/?retryWrites=true&w=majority";
 
 // console.log(process.env.DB_USER);
 // console.log(process.env.DB_PASS);
@@ -33,7 +34,9 @@ async function run() {
     //await client.connect();
 
     const shopsCollection = client.db("clothingStoresDB").collection("shops");
-    const productsCollection = client.db("clothingStoresDB").collection("products");
+    const productsCollection = client
+      .db("clothingStoresDB")
+      .collection("products");
 
     //post shop
     app.post("/shops", async (req, res) => {
@@ -62,29 +65,43 @@ async function run() {
 
     //post product
     app.post("/products", async (req, res) => {
-        try {
-          const newProduct = req.body;
-          console.log(newProduct);
-  
-          const result = await productsCollection.insertOne(newProduct);
-          res.send(result);
-        } catch (err) {
-          console.log(err);
-        }
-      });
-  
-      // get all product
-      app.get("/products", async (req, res) => {
-        try {
-          const cursor = productsCollection.find();
-          const result = await cursor.toArray();
-  
-          res.send(result);
-        } catch (err) {
-          console.log(err);
-        }
-      });
-  
+      try {
+        const newProduct = req.body;
+        console.log(newProduct);
+
+        const result = await productsCollection.insertOne(newProduct);
+        res.send(result);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
+    // get all product
+    app.get("/products", async (req, res) => {
+      try {
+        const cursor = productsCollection.find();
+        const result = await cursor.toArray();
+
+        res.send(result);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
+    //delete product
+    app.delete("/products/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+
+        console.log(id);
+
+        const result = await productsCollection.deleteOne(query);
+        res.send(result);
+      } catch (err) {
+        console.log(err);
+      }
+    });
 
     // Send a ping to confirm a successful connection
     //await client.db("admin").command({ ping: 1 });
