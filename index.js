@@ -33,6 +33,7 @@ async function run() {
     //await client.connect();
 
     const shopsCollection = client.db("clothingStoresDB").collection("shops");
+    const productsCollection = client.db("clothingStoresDB").collection("products");
 
     //post shop
     app.post("/shops", async (req, res) => {
@@ -58,6 +59,32 @@ async function run() {
         console.log(err);
       }
     });
+
+    //post product
+    app.post("/products", async (req, res) => {
+        try {
+          const newProduct = req.body;
+          console.log(newProduct);
+  
+          const result = await productsCollection.insertOne(newProduct);
+          res.send(result);
+        } catch (err) {
+          console.log(err);
+        }
+      });
+  
+      // get all product
+      app.get("/products", async (req, res) => {
+        try {
+          const cursor = productsCollection.find();
+          const result = await cursor.toArray();
+  
+          res.send(result);
+        } catch (err) {
+          console.log(err);
+        }
+      });
+  
 
     // Send a ping to confirm a successful connection
     //await client.db("admin").command({ ping: 1 });
